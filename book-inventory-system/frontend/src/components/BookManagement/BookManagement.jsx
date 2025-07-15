@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { apiFetch } from '../../utils/api';
+import Modal from '../Modal/Modal.jsx';
 
 const BookManagement = () => {
   const [books, setBooks] = useState([]);
@@ -7,6 +8,8 @@ const BookManagement = () => {
   const [author, setAuthor] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [bookToDelete, setBookToDelete] = useState(null);
 
   const fetchBooks = async () => {
     try {
@@ -39,6 +42,23 @@ const BookManagement = () => {
     }
   };
 
+  const handleDeleteClick = (book) => {
+    setBookToDelete(book);
+    setShowDeleteModal(true);
+  };
+
+  const handleDeleteBook = async () => {
+    if (!bookToDelete) return;
+    try {
+      await apiFetch(`/books/${bookToDelete.id}`, { method: 'DELETE' });
+      setShowDeleteModal(false);
+      setBookToDelete(null);
+      fetchBooks();
+    } catch (err) {
+      setError('Failed to delete book');
+    }
+  };
+
   if (loading) return <div>Loading books...</div>;
   if (error) return <div className="text-red-500">{error}</div>;
 
@@ -57,10 +77,18 @@ const BookManagement = () => {
           books.map(book => (
             <li key={book.id} className="flex justify-between items-center border-b py-2">
               <span>{book.title} by {book.author}</span>
+              <button onClick={() => handleDeleteClick(book)} className="bg-red-600 text-white px-3 py-1 rounded">Delete</button>
             </li>
           ))
         )}
       </ul>
+      <Modal isOpen={showDeleteModal} title="Confirm Delete" onClose={() => setShowDeleteModal(false)}>
+        <div>Are you sure you want to delete <b>{bookToDelete?.title}</b>?</div>
+        <div className="flex gap-2 mt-4">
+          <button onClick={handleDeleteBook} className="bg-red-600 text-white px-4 py-2 rounded">Yes, Delete</button>
+          <button onClick={() => setShowDeleteModal(false)} className="bg-gray-300 px-4 py-2 rounded">Cancel</button>
+        </div>
+      </Modal>
     </div>
   );
 };
