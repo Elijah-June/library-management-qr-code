@@ -4,5 +4,6 @@ const transactions = require('../controllers/transactions');
 
 router.get('/', transactions.getAllTransactions);
 router.get('/overdue', transactions.getOverdue);
+router.post('/send-overdue-emails', transactions.sendOverdueEmails);
 
 module.exports = router;
