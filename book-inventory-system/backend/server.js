@@ -8,6 +8,8 @@ const studentsRoutes = require('./routes/students');
 const staffRoutes = require('./routes/staff');
 const transactionsRoutes = require('./routes/transactions');
 const pool = require('./utils/db');
+const cron = require('node-cron');
+const { sendOverdueEmails } = require('./controllers/transactions');
 
 const app = express();
 
@@ -57,6 +59,17 @@ app.get('/api/overdue', async (req, res) => {
 app.post('/api/scanner', async (req, res) => {
   // You can implement logic to register, borrow, or return books here
   res.json({ message: 'Scan received', code: req.body.code });
+});
+
+// Schedule: every 3 days at 9:00 AM
+cron.schedule('0 9 */3 * *', async () => {
+  console.log('Running scheduled overdue email job...');
+  try {
+    // Fake req/res for controller
+    await sendOverdueEmails({ body: {} }, { json: (msg) => console.log('Overdue email job:', msg), status: () => ({ json: console.error }) });
+  } catch (err) {
+    console.error('Scheduled overdue email job failed:', err);
+  }
 });
 
 const PORT = process.env.PORT || 5000;
