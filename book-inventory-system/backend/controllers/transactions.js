@@ -20,6 +20,34 @@ exports.getOverdue = async (req, res) => {
   }
 };
 
+// Borrow a book and notify student
+exports.borrowBook = async (req, res) => {
+  const { book_id, student_id, due_date } = req.body;
+  try {
+    // Insert transaction
+    const { rows } = await pool.query(
+      `INSERT INTO transactions (book_id, student_id, due_date, status) VALUES ($1, $2, $3, 'borrowed') RETURNING *`,
+      [book_id, student_id, due_date]
+    );
+    // Update book status
+    await pool.query(`UPDATE books SET status = 'borrowed' WHERE id = $1`, [book_id]);
+    // Get student and book info
+    const student = (await pool.query('SELECT * FROM students WHERE id = $1', [student_id])).rows[0];
+    const book = (await pool.query('SELECT * FROM books WHERE id = $1', [book_id])).rows[0];
+    // Send email
+    if (student?.email) {
+      await sendMail({
+        to: student.email,
+        subject: `Book Borrowed: ${book.title}`,
+        text: `Dear ${student.name},\n\nYou have borrowed the book "${book.title}". It is due on ${due_date}.\n\nPlease return it on time.`,
+      });
+    }
+    res.status(201).json(rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to borrow book', details: err.message });
+  }
+};
+
 // Send overdue email notifications to students
 exports.sendOverdueEmails = async (req, res) => {
   try {
