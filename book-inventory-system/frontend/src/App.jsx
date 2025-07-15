@@ -1,35 +1,49 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
+import Dashboard from './components/Dashboard';
+import BookManagement from './components/BookManagement';
+import CameraScanner from './components/CameraScanner';
+import Alerts from './components/Alerts';
+import Auth from './components/Auth';
+import Overdue from './components/Overdue';
+import Transactions from './components/Transactions';
+import Students from './components/Students';
+import Staff from './components/Staff';
+import './App.css';
 
 function App() {
-  const [count, setCount] = useState(0)
+  // TODO: Replace with real auth state
+  const isAuthenticated = true;
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <Router>
+      <div className="min-h-screen bg-gray-50">
+        <nav className="bg-blue-700 text-white p-4 flex gap-4">
+          <Link to="/">Dashboard</Link>
+          <Link to="/books">Books</Link>
+          <Link to="/scanner">Scan</Link>
+          <Link to="/transactions">Transactions</Link>
+          <Link to="/overdue">Overdue</Link>
+          <Link to="/students">Students</Link>
+          <Link to="/staff">Staff</Link>
+          <Link to="/login">Login</Link>
+        </nav>
+        <div className="max-w-4xl mx-auto p-4">
+          <Alerts />
+          <Routes>
+            <Route path="/" element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />} />
+            <Route path="/books" element={isAuthenticated ? <BookManagement /> : <Navigate to="/login" />} />
+            <Route path="/scanner" element={isAuthenticated ? <CameraScanner /> : <Navigate to="/login" />} />
+            <Route path="/transactions" element={isAuthenticated ? <Transactions /> : <Navigate to="/login" />} />
+            <Route path="/overdue" element={isAuthenticated ? <Overdue /> : <Navigate to="/login" />} />
+            <Route path="/students" element={isAuthenticated ? <Students /> : <Navigate to="/login" />} />
+            <Route path="/staff" element={isAuthenticated ? <Staff /> : <Navigate to="/login" />} />
+            <Route path="/login" element={<Auth />} />
+          </Routes>
+        </div>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </Router>
+  );
 }
 
-export default App
+export default App;
