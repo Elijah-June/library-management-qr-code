@@ -18,10 +18,10 @@ A secure, modular library/book inventory system with camera scanning, dashboard,
 ```
 /book-inventory-system
 │
-├── /client      (React Frontend)
-├── /server      (Express Backend)
-├── /database    (PostgreSQL schema & seed)
-├── .env         (Backend env vars)
+├── /frontend      (React Frontend)
+├── /backend       (Express Backend)
+├── /database      (PostgreSQL schema & seed)
+├── .env           (Backend env vars)
 ├── README.md
 ```
 
@@ -36,13 +36,13 @@ A secure, modular library/book inventory system with camera scanning, dashboard,
   ```
 
 ### 2. Backend
-- `cd server`
+- `cd backend`
 - Edit `.env` for your DB connection
 - `npm install`
 - `node server.js`
 
 ### 3. Frontend
-- `cd client`
+- `cd frontend`
 - `npm install`
 - `npm run dev`
 
