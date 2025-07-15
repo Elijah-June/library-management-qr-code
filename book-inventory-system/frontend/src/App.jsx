@@ -1,14 +1,14 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
-import Dashboard from './components/Dashboard';
-import BookManagement from './components/BookManagement';
-import CameraScanner from './components/CameraScanner';
-import Alerts from './components/Alerts';
-import Auth from './components/Auth';
-import Overdue from './components/Overdue';
-import Transactions from './components/Transactions';
-import Students from './components/Students';
-import Staff from './components/Staff';
+import Dashboard from './components/Dashboard/Dashboard.jsx';
+import BookManagement from './components/BookManagement/BookManagement.jsx';
+import CameraScanner from './components/CameraScanner/CameraScanner.jsx';
+import Alerts from './components/Alerts/Alerts.jsx';
+import Auth from './components/Auth/Auth.jsx';
+import Overdue from './components/Overdue/Overdue.jsx';
+import Transactions from './components/Transactions/Transactions.jsx';
+import Students from './components/Students/Students.jsx';
+import Staff from './components/Staff/Staff.jsx';
 import './App.css';
 
 function App() {
