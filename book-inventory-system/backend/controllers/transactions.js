@@ -104,3 +104,31 @@ exports.sendOverdueEmails = async (req, res) => {
     res.status(500).json({ error: 'Failed to send overdue emails', details: err.message });
   }
 };
+
+// Analytics for borrowed/returned books
+exports.analytics = async (req, res) => {
+  const { range } = req.query;
+  let interval = 'day';
+  if (['day', 'week', 'month', 'year'].includes(range)) interval = range;
+  let borrowedQuery = '', returnedQuery = '';
+  if (interval === 'day') {
+    borrowedQuery = `SELECT COUNT(*) FROM transactions WHERE status = 'borrowed' AND borrow_date::date = CURRENT_DATE`;
+    returnedQuery = `SELECT COUNT(*) FROM transactions WHERE status = 'returned' AND return_date::date = CURRENT_DATE`;
+  } else if (interval === 'week') {
+    borrowedQuery = `SELECT COUNT(*) FROM transactions WHERE status = 'borrowed' AND borrow_date >= date_trunc('week', CURRENT_DATE)`;
+    returnedQuery = `SELECT COUNT(*) FROM transactions WHERE status = 'returned' AND return_date >= date_trunc('week', CURRENT_DATE)`;
+  } else if (interval === 'month') {
+    borrowedQuery = `SELECT COUNT(*) FROM transactions WHERE status = 'borrowed' AND borrow_date >= date_trunc('month', CURRENT_DATE)`;
+    returnedQuery = `SELECT COUNT(*) FROM transactions WHERE status = 'returned' AND return_date >= date_trunc('month', CURRENT_DATE)`;
+  } else if (interval === 'year') {
+    borrowedQuery = `SELECT COUNT(*) FROM transactions WHERE status = 'borrowed' AND borrow_date >= date_trunc('year', CURRENT_DATE)`;
+    returnedQuery = `SELECT COUNT(*) FROM transactions WHERE status = 'returned' AND return_date >= date_trunc('year', CURRENT_DATE)`;
+  }
+  try {
+    const borrowed = Number((await pool.query(borrowedQuery)).rows[0].count);
+    const returned = Number((await pool.query(returnedQuery)).rows[0].count);
+    res.json({ borrowed, returned });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch analytics', details: err.message });
+  }
+};

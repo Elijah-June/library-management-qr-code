@@ -9,6 +9,8 @@ import Overdue from './components/Overdue/Overdue.jsx';
 import Transactions from './components/Transactions/Transactions.jsx';
 import Students from './components/Students/Students.jsx';
 import Staff from './components/Staff/Staff.jsx';
+import Returns from './components/Returns/Returns.jsx';
+import Analytics from './components/Analytics/Analytics.jsx';
 import './App.css';
 
 function App() {
@@ -23,6 +25,8 @@ function App() {
           <Link to="/books">Books</Link>
           <Link to="/scanner">Scan</Link>
           <Link to="/transactions">Transactions</Link>
+          <Link to="/returns">Returns</Link>
+          <Link to="/analytics">Analytics</Link>
           <Link to="/overdue">Overdue</Link>
           <Link to="/students">Students</Link>
           <Link to="/staff">Staff</Link>
@@ -35,6 +39,8 @@ function App() {
             <Route path="/books" element={isAuthenticated ? <BookManagement /> : <Navigate to="/login" />} />
             <Route path="/scanner" element={isAuthenticated ? <CameraScanner /> : <Navigate to="/login" />} />
             <Route path="/transactions" element={isAuthenticated ? <Transactions /> : <Navigate to="/login" />} />
+            <Route path="/returns" element={isAuthenticated ? <Returns /> : <Navigate to="/login" />} />
+            <Route path="/analytics" element={isAuthenticated ? <Analytics /> : <Navigate to="/login" />} />
             <Route path="/overdue" element={isAuthenticated ? <Overdue /> : <Navigate to="/login" />} />
             <Route path="/students" element={isAuthenticated ? <Students /> : <Navigate to="/login" />} />
             <Route path="/staff" element={isAuthenticated ? <Staff /> : <Navigate to="/login" />} />
