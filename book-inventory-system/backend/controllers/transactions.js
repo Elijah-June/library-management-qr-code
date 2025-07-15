@@ -48,6 +48,36 @@ exports.borrowBook = async (req, res) => {
   }
 };
 
+// Return a book and notify student
+exports.returnBook = async (req, res) => {
+  const { transaction_id } = req.body;
+  try {
+    // Update transaction
+    const { rows } = await pool.query(
+      `UPDATE transactions SET return_date = NOW(), status = 'returned' WHERE id = $1 RETURNING *`,
+      [transaction_id]
+    );
+    const tx = rows[0];
+    if (!tx) return res.status(404).json({ error: 'Transaction not found' });
+    // Update book status
+    await pool.query(`UPDATE books SET status = 'available' WHERE id = $1`, [tx.book_id]);
+    // Get student and book info
+    const student = (await pool.query('SELECT * FROM students WHERE id = $1', [tx.student_id])).rows[0];
+    const book = (await pool.query('SELECT * FROM books WHERE id = $1', [tx.book_id])).rows[0];
+    // Send email
+    if (student?.email) {
+      await sendMail({
+        to: student.email,
+        subject: `Book Returned: ${book.title}`,
+        text: `Dear ${student.name},\n\nThank you for returning the book "${book.title}".\n\nWe appreciate your cooperation.`,
+      });
+    }
+    res.json(tx);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to return book', details: err.message });
+  }
+};
+
 // Send overdue email notifications to students
 exports.sendOverdueEmails = async (req, res) => {
   try {
